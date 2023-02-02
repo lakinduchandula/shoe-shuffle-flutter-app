@@ -1,8 +1,12 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -34,15 +38,45 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   File? imageFile;
+  String? _textData;
+
+  Future sendImageToServer() async {
+    print('Sending Image to Server... ============');
+
+    var url = 'http://ec2-100-25-202-77.compute-1.amazonaws.com/image';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.files
+        .add(await http.MultipartFile.fromPath('img', imageFile!.path));
+    var response = await request.send();
+
+    print('Response status: ${response.statusCode}');
+    
+    response.stream.transform(utf8.decoder).listen((value) {
+      setState(() {
+        _textData = value;
+      });
+    });
+  }
+
+ 
 
   Future pickImage(ImageSource source) async {
     try {
       final imageFile = await ImagePicker().pickImage(
         source: source,
+        imageQuality: 80,
       );
       if (imageFile == null) return;
 
       final imageTemp = File(imageFile.path);
+
+      try {
+        await sendImageToServer();
+      } catch (e) {
+        print(e);
+      }
+
+      print('==== Done Uploading and Getting Prediction ====');
 
       setState(() {
         this.imageFile = imageTemp;
@@ -76,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: 160,
                   fit: BoxFit.cover,
                 ),
+          _textData == null ? Container() : Text(_textData!),
           const Spacer(),
           Container(
             alignment: Alignment.center,
