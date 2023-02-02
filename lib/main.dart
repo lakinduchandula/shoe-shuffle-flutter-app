@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, depend_on_referenced_packages
 
 import 'dart:io';
 import 'dart:convert';
@@ -6,7 +6,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path/path.dart' as p;
 import 'package:http/http.dart' as http;
+
 
 void main() {
   runApp(const MyApp());
@@ -50,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var response = await request.send();
 
     print('Response status: ${response.statusCode}');
-    
+
     response.stream.transform(utf8.decoder).listen((value) {
       setState(() {
         _textData = value;
@@ -58,17 +62,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
- 
-
   Future pickImage(ImageSource source) async {
     try {
-      final imageFile = await ImagePicker().pickImage(
+      final pickedFile = await ImagePicker().pickImage(
         source: source,
-        imageQuality: 80,
+        imageQuality: 50,
       );
-      if (imageFile == null) return;
+      if (pickedFile == null) return;
 
-      final imageTemp = File(imageFile.path);
+      var imageTemp = File(pickedFile.path);
+      imageTemp = await compressImage(imageTemp.path, 50);
 
       try {
         await sendImageToServer();
@@ -79,11 +82,21 @@ class _MyHomePageState extends State<MyHomePage> {
       print('==== Done Uploading and Getting Prediction ====');
 
       setState(() {
-        this.imageFile = imageTemp;
+        imageFile = imageTemp;
       });
     } on PlatformException catch (e) {
       print('Failed to pick image: $e');
     }
+  }
+
+  Future<File> compressImage(String path, int quality) async {
+    final newPath = p.join((await getTemporaryDirectory()).path,
+        '${DateTime.now()}.${p.extension(path)}');
+
+    final result = await FlutterImageCompress.compressAndGetFile(path, newPath,
+        quality: quality);
+
+    return result!;
   }
 
   @override
