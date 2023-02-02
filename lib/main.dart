@@ -8,9 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path/path.dart' as p;
 import 'package:http/http.dart' as http;
-
 
 void main() {
   runApp(const MyApp());
@@ -23,11 +23,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Shoe Shuffle',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'SS - Feet Size Prediction'),
     );
   }
 }
@@ -43,6 +43,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   File? imageFile;
   String? _textData;
+  bool isLoading = false;
 
   Future sendImageToServer() async {
     print('Sending Image to Server... ============');
@@ -57,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     response.stream.transform(utf8.decoder).listen((value) {
       setState(() {
+        isLoading = false;
         _textData = value;
       });
     });
@@ -73,17 +75,16 @@ class _MyHomePageState extends State<MyHomePage> {
       var imageTemp = File(pickedFile.path);
       imageTemp = await compressImage(imageTemp.path, 50);
 
+      setState(() {
+        isLoading = true;
+        imageFile = imageTemp;
+      });
+
       try {
         await sendImageToServer();
       } catch (e) {
         print(e);
       }
-
-      print('==== Done Uploading and Getting Prediction ====');
-
-      setState(() {
-        imageFile = imageTemp;
-      });
     } on PlatformException catch (e) {
       print('Failed to pick image: $e');
     }
@@ -117,13 +118,23 @@ class _MyHomePageState extends State<MyHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 )
-              : Image.file(
-                  imageFile!,
-                  width: 160,
-                  height: 160,
-                  fit: BoxFit.cover,
+              : Column(
+                  children: [
+                    Image.file(
+                      imageFile!,
+                      width: 250,
+                      height: 250,
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(height: 15),
+                    isLoading
+                        ? const SpinKitThreeBounce(
+                            color: Colors.white,
+                            size: 35.0,
+                          )
+                        : Text(_textData!),
+                  ],
                 ),
-          _textData == null ? Container() : Text(_textData!),
           const Spacer(),
           Container(
             alignment: Alignment.center,
