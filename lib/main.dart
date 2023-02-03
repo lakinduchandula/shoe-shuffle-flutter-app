@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Image.file(
                       imageFile!,
                       width: 250,
-                      height: 250,
+                      height: 275,
                       fit: BoxFit.cover,
                     ),
                     const SizedBox(height: 15),
