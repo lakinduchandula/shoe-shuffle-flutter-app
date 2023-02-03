@@ -30,7 +30,11 @@ cd shoe-shuffle-flutter-app
 flutter run
 ```
 
-![Screenshot_shoe-shuflle](https://github.com/lakinduchandula/shoe-shuffle-flutter-app/blob/main/assets/images/shoe_shuffle_app_screenshot.jpg)
+## Screenshots
+<img src="https://github.com/lakinduchandula/shoe-shuffle-flutter-app/blob/main/assets/images/shoe_shuffle_app_screenshot.jpg?raw=true" width="256"/>
+
+## References
+- https://github.com/wildoctopus/FeetAndShoeMeasurement
 
 ## License
 Apache License 2.0 
