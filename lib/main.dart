@@ -12,6 +12,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path/path.dart' as p;
 import 'package:http/http.dart' as http;
 
+import './colors.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -24,8 +26,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Shoe Shuffle',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: darkBlueSwatch,
       ),
       home: const MyHomePage(title: 'SS - Feet Size Prediction'),
     );
@@ -106,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      backgroundColor: Colors.blue[300],
+      backgroundColor: const Color(0xFF03a9f4),
       body: Column(
         children: [
           const Spacer(),
@@ -122,8 +125,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     Image.file(
                       imageFile!,
-                      width: 250,
-                      height: 275,
+                      width: MediaQuery.of(context).size.width * 0.65,
+                      height: MediaQuery.of(context).size.height * 0.4,
                       fit: BoxFit.cover,
                     ),
                     const SizedBox(height: 15),
@@ -181,7 +184,7 @@ Widget buildButton({
     style: ElevatedButton.styleFrom(
       minimumSize: const Size.fromHeight(56),
       backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
+      foregroundColor: darkBlueSwatch[800],
       textStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold,
