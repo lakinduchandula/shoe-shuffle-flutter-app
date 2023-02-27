@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future sendImageToServer() async {
     print('Sending Image to Server... ============');
 
-    var url = 'http://ec2-100-25-202-77.compute-1.amazonaws.com/image';
+    var url = 'http://ec2-44-198-58-208.compute-1.amazonaws.com/image';
     var request = http.MultipartRequest('POST', Uri.parse(url));
     request.files
         .add(await http.MultipartFile.fromPath('img', imageFile!.path));
